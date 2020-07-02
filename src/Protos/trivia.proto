@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "TriviaGame";
+
+package trivia;
+
+// The greeting service definition.
+service Trivia {
+  // Sends a greeting
+  rpc PlayTrivia (stream TriviaAnswer) returns (stream TriviaQuestion);
+}
+
+// The request message containing the user's name.
+message TriviaAnswer {
+  string answer = 1;
+}
+
+// The response message containing the greetings.
+message TriviaQuestion {
+  string question = 1;
+  repeated string answers = 2;
+}

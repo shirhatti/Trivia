@@ -17,6 +17,7 @@ namespace TriviaServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddSingleton(new TriviaLobby());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +32,7 @@ namespace TriviaServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<TriviaService>();
 
                 endpoints.MapGet("/", async context =>
                 {
