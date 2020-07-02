@@ -5,21 +5,7 @@
 
 @inject Trivia.TriviaClient TriviaClient
 
-@if (Question != null)
-{
-    <p>@Question.Question</p>
-    <ul>
-        @foreach (var answer in Question.Answers.ToList())
-        {
-        <li>
-            <button class="btn btn-primary" @onclick="@(() => SendAnswer(answer))" >
-                @answer
-            </button>
-        </li>
-        }
-    </ul>
-}
-
+<QuestionComponent Question="@Question" OnClick="SendAnswer"/>
 
 @code {
     private TriviaQuestion Question { get; set; }

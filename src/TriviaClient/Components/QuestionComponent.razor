@@ -1,0 +1,25 @@
+﻿@using TriviaGame
+
+@if (Question != null)
+{
+    <p>@Question.Question</p>
+    <ul>
+        @foreach (var answer in Question.Answers.ToList())
+        {
+            <li>
+                <button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(answer))">
+                    @answer
+                </button>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public TriviaQuestion Question { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnClick { get; set; }
+
+}
