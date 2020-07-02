@@ -1,0 +1,54 @@
+﻿@page "/playtrivia"
+@using Grpc.Core
+@using TriviaGame
+@implements IDisposable
+
+@inject Trivia.TriviaClient TriviaClient
+
+@if (Question != null)
+{
+    <p>@Question.Question</p>
+    <ul>
+        @foreach (var answer in Question.Answers.ToList())
+        {
+        <li>
+            <button class="btn btn-primary" @onclick="@(() => SendAnswer(answer))" >
+                @answer
+            </button>
+        </li>
+        }
+    </ul>
+}
+
+
+@code {
+    private TriviaQuestion Question { get; set; }
+    private string Answer { get; set; }
+    private AsyncDuplexStreamingCall<TriviaAnswer, TriviaQuestion> Call { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        Call = TriviaClient.PlayTrivia();
+        Task.Run(async () =>
+        {
+            await foreach (var triviaQuestion in Call.ResponseStream.ReadAllAsync())
+            {
+                Question = triviaQuestion;
+                await InvokeAsync(() => base.StateHasChanged());
+            }
+            Question = null;
+            await InvokeAsync(() => base.StateHasChanged());
+        });
+        return Task.CompletedTask;
+    }
+
+    private async Task SendAnswer(string AttemptedAnswer)
+    {
+        await Call.RequestStream.WriteAsync(new TriviaAnswer { Answer = AttemptedAnswer });
+    }
+
+    public void Dispose()
+    {
+        Call.Dispose();
+    }
+
+}

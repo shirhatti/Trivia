@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TriviaClient.Data;
-using TriviaServer;
+using TriviaGame;
 
 namespace TriviaClient
 {
@@ -29,8 +28,7 @@ namespace TriviaClient
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddGrpcClient<Greeter.GreeterClient>(options =>
+            services.AddGrpcClient<Trivia.TriviaClient>(options =>
             {
                 options.Address = GetUri(Configuration, "TriviaServer");
             });

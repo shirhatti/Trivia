@@ -9,9 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\TriviaServer\Protos\greet.proto" GrpcServices="Client">
-      <Link>Protos\greet.proto</Link>
-    </Protobuf>
+    <Protobuf Include="..\Protos\trivia.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
