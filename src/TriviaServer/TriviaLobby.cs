@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,15 @@ namespace TriviaServer
         private ConcurrentQueue<TriviaPlayer> _players = new ConcurrentQueue<TriviaPlayer>();
         private Dictionary<Guid, TriviaGame> _games = new Dictionary<Guid, TriviaGame>();
         private object _gameStartLock = new object();
-        
+        private ILogger _logger;
+        private ILoggerFactory _loggerFactory;
+
+        public TriviaLobby(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger("TriviaLobby");
+        }
+
         public void AddPlayer(TriviaPlayer player)
         {
             _players.Enqueue(player);
@@ -31,7 +40,7 @@ namespace TriviaServer
                     }
                 }
 
-                var game = new TriviaGame(readyPlayers);
+                var game = new TriviaGame(readyPlayers, _loggerFactory);
                 _games[game.ID] = game;
 
                 foreach (var readyPlayer in readyPlayers)

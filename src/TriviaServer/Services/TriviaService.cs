@@ -10,18 +10,20 @@ namespace TriviaServer
 {
     public class TriviaService : Trivia.TriviaBase
     {
-        private readonly ILogger<TriviaService> _logger;
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly TriviaLobby _lobby;
 
-        public TriviaService(ILogger<TriviaService> logger, TriviaLobby lobby)
+        public TriviaService(ILoggerFactory loggerFactory, TriviaLobby lobby)
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger("TriviaService");
             _lobby = lobby;
         }
 
         public override Task<Game> StartTrivia(Player request, ServerCallContext context)
         {
-            var player = new TriviaPlayer(request.Name);
+            var player = new TriviaPlayer(request.Name, _loggerFactory);
             _lobby.AddPlayer(player);
 
             return player.ReadyTask;
@@ -29,8 +31,11 @@ namespace TriviaServer
 
         public override Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<TriviaQuestion> responseStream, ServerCallContext context)
         {
-            var playerName = context.RequestHeaders.Single(h => h.Key == "PlayerName").Value;
-            var gameId = context.RequestHeaders.Single(h => h.Key == "GameID").Value;
+            _logger.LogInformation("Playing trivia");
+            var playerName = context.RequestHeaders.SingleOrDefault(h => h.Key == "playername")?.Value;
+            var gameId = context.RequestHeaders.SingleOrDefault(h => h.Key == "gameid")?.Value;
+
+            _logger.LogInformation($"Starting trivia game with {playerName} in {gameId}");
             var game = _lobby.GetGame(Guid.Parse(gameId));
             var player = game.GetPlayer(playerName);
 

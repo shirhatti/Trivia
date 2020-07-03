@@ -35,9 +35,9 @@
         await InvokeAsync(() => base.StateHasChanged());
 
         var metadata = new Metadata();
-        metadata.Add("PlayerName", Player.Name);
-        metadata.Add("GameID", Game.GameID);
-        Call = TriviaClient.PlayTrivia();
+        metadata.Add("playername", Player.Name);
+        metadata.Add("gameid", Game.GameID);
+        Call = TriviaClient.PlayTrivia(metadata);
 
         _ = Task.Run(async () =>
         {
@@ -57,9 +57,9 @@
         });
     }
 
-    private async Task SendAnswer(int answer)
+    private async Task SendAnswer(TriviaAnswer answer)
     {
-        await Call.RequestStream.WriteAsync(new TriviaAnswer { Answer = answer });
+        await Call.RequestStream.WriteAsync(answer);
     }
 
     public void Dispose()
