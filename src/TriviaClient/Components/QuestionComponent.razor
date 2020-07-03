@@ -4,11 +4,11 @@
 {
     <p>@Question.Question</p>
     <ul>
-        @for (int i = 0; i < Question.Answers.Count; i++)
+        @foreach (var answer in Question.Answers.Select((AnswerString, AnswerIndex) => new { AnswerIndex, AnswerString}))
         {
             <li>
-                <button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(new TriviaAnswer { QuestionID = Question.QuestionID, Answer = i}))">
-                    @Question.Answers[i]
+                <button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(new TriviaAnswer { QuestionID = Question.QuestionID, Answer = answer.AnswerIndex}))">
+                    @answer.AnswerString
                 </button>
             </li>
         }
