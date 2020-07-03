@@ -5,31 +5,58 @@
 
 @inject Trivia.TriviaClient TriviaClient
 
-<QuestionComponent Question="@Question" OnClick="SendAnswer"/>
+@if (!Started)
+{
+    <StartTriviaComponent OnClick="SendStartTrivia" />
+}
+<QuestionComponent Question="@Question" OnClick="SendAnswer" />
+@if (Ended)
+{
+    <p>Score</p>
+    <p>@Score</p>
+}
 
 @code {
     private TriviaQuestion Question { get; set; }
+    private Game Game { get; set; }
+    private Player Player { get; set; }
     private string Answer { get; set; }
+    private bool Started { get; set; }
+    private bool Ended { get; set; }
+    private int Score { get; set; }
+
     private AsyncDuplexStreamingCall<TriviaAnswer, TriviaQuestion> Call { get; set; }
-    protected override Task OnInitializedAsync()
+
+    private async Task SendStartTrivia(string name)
     {
+        Player = new Player { Name = name };
+        Game = await TriviaClient.StartTriviaAsync(Player);
+        Started = true;
+        await InvokeAsync(() => base.StateHasChanged());
+
         Call = TriviaClient.PlayTrivia();
-        Task.Run(async () =>
+
+        _ = Task.Run(async () =>
         {
             await foreach (var triviaQuestion in Call.ResponseStream.ReadAllAsync())
             {
                 Question = triviaQuestion;
                 await InvokeAsync(() => base.StateHasChanged());
             }
+
             Question = null;
+            Ended = true;
+
+            var result = await TriviaClient.TriviaScoreAsync(new TriviaSession { Game = Game, Player = Player });
+            Score = result.Score;
+
             await InvokeAsync(() => base.StateHasChanged());
         });
-        return Task.CompletedTask;
     }
 
-    private async Task SendAnswer(string AttemptedAnswer)
+    private async Task SendAnswer(int answer)
     {
-        await Call.RequestStream.WriteAsync(new TriviaAnswer { Answer = AttemptedAnswer });
+        await Call.RequestStream.WriteAsync(new TriviaAnswer { Answer = answer });
     }
 
     public void Dispose()

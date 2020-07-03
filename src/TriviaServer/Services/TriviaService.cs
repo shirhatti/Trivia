@@ -19,12 +19,32 @@ namespace TriviaServer
             _lobby = lobby;
         }
 
-        public override Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<TriviaQuestion> responseStream, ServerCallContext context)
+        public override Task<Game> StartTrivia(Player request, ServerCallContext context)
         {
-            var player = new TriviaPlayer(requestStream, responseStream);
+            var player = new TriviaPlayer(request.Name);
             _lobby.AddPlayer(player);
 
-            return player.FinishedPlayingTask;
+            return player.ReadyTask;
+        }
+
+        public override Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<TriviaQuestion> responseStream, ServerCallContext context)
+        {
+            var playerName = context.RequestHeaders.Single(h => h.Key == "PlayerName").Value;
+            var gameId = context.RequestHeaders.Single(h => h.Key == "GameID").Value;
+            var game = _lobby.GetGame(Guid.Parse(gameId));
+            var player = game.GetPlayer(playerName);
+
+            return player.Play(requestStream, responseStream);
+        }
+
+        public override Task<TriviaResult> TriviaScore(TriviaSession request, ServerCallContext context)
+        {
+            return Task.FromResult(new TriviaResult
+            {
+                Score = _lobby
+                    .GetGame(Guid.Parse(request.Game.GameID))
+                    .GetPlayer(request.Player.Name).Score
+            });
         }
     }
 }

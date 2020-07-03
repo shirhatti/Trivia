@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TriviaServer
 {
@@ -11,13 +9,15 @@ namespace TriviaServer
         {
             new TriviaBankEntry {
                 Question = "Equal to roughly 746 watts, what animal-based unit is used to measure the rate at which work is done?",
+                QuestionID = Guid.NewGuid(),
                 Answers = new string[] { "HorsePower", "Donkeystrength", "Llamathrust", "Zebraforce" },
-                CorrectAnswer = "HorsePower"
+                CorrectAnswer = 1
             },
             new TriviaBankEntry {
                 Question = "Which of the following is the largest?",
+                QuestionID = Guid.NewGuid(),
                 Answers = new string[] { "Peanut", "Elephant", "Moon", "Kettle" },
-                CorrectAnswer = "Moon"
+                CorrectAnswer = 3
             }
         };
     }

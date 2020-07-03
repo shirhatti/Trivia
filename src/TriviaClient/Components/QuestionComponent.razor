@@ -4,11 +4,11 @@
 {
     <p>@Question.Question</p>
     <ul>
-        @foreach (var answer in Question.Answers.ToList())
+        @for (int i = 0; i < Question.Answers.Count; i++)
         {
             <li>
-                <button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(answer))">
-                    @answer
+                <button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(i))">
+                    @Question.Answers[i]
                 </button>
             </li>
         }
@@ -20,6 +20,6 @@
     public TriviaQuestion Question { get; set; }
 
     [Parameter]
-    public EventCallback<string> OnClick { get; set; }
+    public EventCallback<int> OnClick { get; set; }
 
 }

@@ -4,19 +4,46 @@ option csharp_namespace = "TriviaGame";
 
 package trivia;
 
-// The greeting service definition.
+// The trivia service definition.
 service Trivia {
-  // Sends a greeting
+  // Duplex stream of questions and answers
+  rpc StartTrivia (Player) returns (Game);
+  // Duplex stream of questions and answers
   rpc PlayTrivia (stream TriviaAnswer) returns (stream TriviaQuestion);
+  // Duplex stream of questions and answers
+  rpc TriviaScore (TriviaSession) returns (TriviaResult);
 }
 
-// The request message containing the user's name.
+// The message containing the name of the player.
+message Player {
+  string name = 1;
+}
+
+// The message containing the ID of the game.
+message Game {
+  string gameID = 1;
+}
+
+// The message containing the answer and the ID of the question being answered.
 message TriviaAnswer {
-  string answer = 1;
+  int32 answer = 1;
+  string questionID = 2;
 }
 
-// The response message containing the greetings.
+// The message containing the trivia question, the ID of the questions and list of possible answers.
 message TriviaQuestion {
   string question = 1;
-  repeated string answers = 2;
+  string questionID = 2;
+  repeated string answers = 3;
+}
+
+// The message containing which game and which player to query the results for.
+message TriviaSession {
+  Player player = 1;
+  Game game = 2;
+}
+
+// The message containing the score of the game session.
+message TriviaResult {
+  int32 score = 1;
 }

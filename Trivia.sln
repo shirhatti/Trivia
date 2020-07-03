@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriviaClient", "src\TriviaC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriviaServer", "src\TriviaServer\TriviaServer.csproj", "{F9EA6DF4-81E8-49C3-85EF-DD9CF54EDF0D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriviaConsole", "src\TriviaConsole\TriviaConsole.csproj", "{74ED245C-2C33-4190-B2FC-4C18934A856C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{FCBF63DE-354F-4F19-9992-2E70F5786215}"
 	ProjectSection(SolutionItems) = preProject
 		src\Protos\trivia.proto = src\Protos\trivia.proto
@@ -50,18 +48,6 @@ Global
 		{F9EA6DF4-81E8-49C3-85EF-DD9CF54EDF0D}.Release|x64.Build.0 = Release|Any CPU
 		{F9EA6DF4-81E8-49C3-85EF-DD9CF54EDF0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9EA6DF4-81E8-49C3-85EF-DD9CF54EDF0D}.Release|x86.Build.0 = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|x64.Build.0 = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Debug|x86.Build.0 = Debug|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|x64.ActiveCfg = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|x64.Build.0 = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|x86.ActiveCfg = Release|Any CPU
-		{74ED245C-2C33-4190-B2FC-4C18934A856C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,7 +55,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B6B63967-69E2-4DD0-8ED9-42C52FF13263} = {A446F133-C157-46F0-8C09-4E72B03576AC}
 		{F9EA6DF4-81E8-49C3-85EF-DD9CF54EDF0D} = {A446F133-C157-46F0-8C09-4E72B03576AC}
-		{74ED245C-2C33-4190-B2FC-4C18934A856C} = {A446F133-C157-46F0-8C09-4E72B03576AC}
 		{FCBF63DE-354F-4F19-9992-2E70F5786215} = {A446F133-C157-46F0-8C09-4E72B03576AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

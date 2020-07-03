@@ -43,7 +43,7 @@ namespace TriviaConsole
 
                 if (currentQuestion.Answers.Any(a => string.Equals(a, result, StringComparison.OrdinalIgnoreCase)))
                 {
-                    await call.RequestStream.WriteAsync(new TriviaAnswer { Answer = result });
+                    //await call.RequestStream.WriteAsync(new TriviaAnswer { Answer = result });
                 }
             }
 

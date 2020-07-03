@@ -1,0 +1,11 @@
+﻿<p>What's your name?</p>
+<input @bind="PlayerName" />
+<button class="btn btn-primary" @onclick="@(() => OnClick.InvokeAsync(PlayerName))" />
+
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnClick { get; set; }
+
+    private string PlayerName { get; set; }
+}
