@@ -16,7 +16,7 @@ namespace TriviaServer
 
         public TriviaGame(IEnumerable<TriviaPlayer> players, ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger("TriviaGame");
+            _logger = loggerFactory.CreateLogger<TriviaGame>();
             _players = players;
             ID = Guid.NewGuid();
         }

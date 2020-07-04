@@ -14,10 +14,10 @@ namespace TriviaServer
         private readonly ILoggerFactory _loggerFactory;
         private readonly TriviaLobby _lobby;
 
-        public TriviaService(ILoggerFactory loggerFactory, TriviaLobby lobby)
+        public TriviaService(ILoggerFactory loggerFactory, TriviaLobby lobby, ILogger<TriviaService> logger)
         {
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory.CreateLogger("TriviaService");
+            _logger = logger;
             _lobby = lobby;
         }
 
@@ -43,7 +43,6 @@ namespace TriviaServer
             responseHeader.Add("numberofquestions", TriviaBank.DefaultBank.Count().ToString());
 
             await context.WriteResponseHeadersAsync(responseHeader);
-
             await player.Play(requestStream, responseStream);
         }
 

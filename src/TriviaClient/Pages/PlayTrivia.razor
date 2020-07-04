@@ -10,6 +10,10 @@
     <StartTriviaComponent OnClick="SendStartTrivia" />
 }
 <QuestionComponent Question="@Question" OnClick="SendAnswer" />
+@if (WaitingForPlayers)
+{
+    <p>Waiting for other players...</p>
+}
 @if (AllAnswerSent.Task.IsCompleted)
 {
     <p>Score</p>
@@ -22,6 +26,7 @@
     private Player Player { get; set; }
     private string Answer { get; set; }
     private bool Started { get; set; }
+    private bool WaitingForPlayers { get; set; }
     private int Score { get; set; }
     private int NumberOfQuestions { get; set; }
     private int NumberOfQuestionsAnswered { get; set; }
@@ -31,9 +36,13 @@
 
     private async Task SendStartTrivia(string name)
     {
+        WaitingForPlayers = true;
+        await InvokeAsync(() => base.StateHasChanged());
+
         Player = new Player { Name = name };
         Game = await TriviaClient.StartTriviaAsync(Player);
         Started = true;
+        WaitingForPlayers = false;
         await InvokeAsync(() => base.StateHasChanged());
 
         var metadata = new Metadata();
@@ -47,6 +56,7 @@
         {
             await foreach (var triviaQuestion in Call.ResponseStream.ReadAllAsync())
             {
+                WaitingForPlayers = false;
                 Question = triviaQuestion;
                 await InvokeAsync(() => base.StateHasChanged());
             }
@@ -69,9 +79,15 @@
         await Call.RequestStream.WriteAsync(answer);
         NumberOfQuestionsAnswered++;
 
+
         if (NumberOfQuestionsAnswered == NumberOfQuestions)
         {
             AllAnswerSent.SetResult(null);
+        }
+        else
+        {
+            WaitingForPlayers = true;
+            await InvokeAsync(() => base.StateHasChanged());
         }
     }
 

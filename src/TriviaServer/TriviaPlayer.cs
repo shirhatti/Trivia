@@ -27,7 +27,7 @@ namespace TriviaServer
         public TriviaPlayer(string name, ILoggerFactory loggerFactory)
         {
             Name = name;
-            _logger = loggerFactory.CreateLogger("TriviaPlayer");
+            _logger = loggerFactory.CreateLogger<TriviaPlayer>();
         }
 
         public void StartGame(TriviaGame game)

@@ -2,25 +2,21 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using TriviaGame;
 
 namespace TriviaServer
 {
     public class TriviaLobby
     {
-        private const int PlayersPerGame = 1;
+        private const int PlayersPerGame = 2;
         private ConcurrentQueue<TriviaPlayer> _players = new ConcurrentQueue<TriviaPlayer>();
         private Dictionary<Guid, TriviaGame> _games = new Dictionary<Guid, TriviaGame>();
         private object _gameStartLock = new object();
-        private ILogger _logger;
         private ILoggerFactory _loggerFactory;
 
         public TriviaLobby(ILoggerFactory loggerFactory)
         {
             _loggerFactory = loggerFactory;
-            _logger = _loggerFactory.CreateLogger("TriviaLobby");
         }
 
         public void AddPlayer(TriviaPlayer player)
