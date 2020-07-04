@@ -10,7 +10,7 @@
     <StartTriviaComponent OnClick="SendStartTrivia" />
 }
 <QuestionComponent Question="@Question" OnClick="SendAnswer" />
-@if (Ended)
+@if (AllAnswerSent.Task.IsCompleted)
 {
     <p>Score</p>
     <p>@Score</p>
@@ -22,8 +22,10 @@
     private Player Player { get; set; }
     private string Answer { get; set; }
     private bool Started { get; set; }
-    private bool Ended { get; set; }
     private int Score { get; set; }
+    private int NumberOfQuestions { get; set; }
+    private int NumberOfQuestionsAnswered { get; set; }
+    private TaskCompletionSource<object> AllAnswerSent { get; } = new TaskCompletionSource<object>();
 
     private AsyncDuplexStreamingCall<TriviaAnswer, TriviaQuestion> Call { get; set; }
 
@@ -38,33 +40,44 @@
         metadata.Add("playername", Player.Name);
         metadata.Add("gameid", Game.GameID);
         Call = TriviaClient.PlayTrivia(metadata);
+        var responseHeaders = await Call.ResponseHeadersAsync;
+        NumberOfQuestions = int.Parse(responseHeaders.SingleOrDefault(h => h.Key == "numberofquestions").Value);
 
-        _ = Task.Run(async () =>
+        var readTask = Task.Run(async () =>
         {
             await foreach (var triviaQuestion in Call.ResponseStream.ReadAllAsync())
             {
                 Question = triviaQuestion;
                 await InvokeAsync(() => base.StateHasChanged());
             }
-
-            Question = null;
-            Ended = true;
-
-            var result = await TriviaClient.TriviaScoreAsync(new TriviaSession { Game = Game, Player = Player });
-            Score = result.Score;
-
-            await InvokeAsync(() => base.StateHasChanged());
         });
+
+        await AllAnswerSent.Task;
+        await Call.RequestStream.CompleteAsync();
+        await readTask;
+
+        Question = null;
+
+        var result = await TriviaClient.TriviaScoreAsync(new TriviaSession { Game = Game, Player = Player });
+        Score = result.Score;
+
+        await InvokeAsync(() => base.StateHasChanged());
     }
 
     private async Task SendAnswer(TriviaAnswer answer)
     {
         await Call.RequestStream.WriteAsync(answer);
+        NumberOfQuestionsAnswered++;
+
+        if (NumberOfQuestionsAnswered == NumberOfQuestions)
+        {
+            AllAnswerSent.SetResult(null);
+        }
     }
 
     public void Dispose()
     {
-        Call.Dispose();
+        Call?.Dispose();
     }
 
 }

@@ -43,12 +43,6 @@ namespace TriviaServer
             }
 
             _logger.LogInformation("Trivia questions completed");
-
-            // Send question to players
-            foreach (var player in _players)
-            {
-                player.EndGame();
-            }
         }
 
         public TriviaPlayer GetPlayer(string name) => _players.Single(p => p.Name == name);

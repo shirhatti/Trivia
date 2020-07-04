@@ -12,7 +12,6 @@ namespace TriviaServer
         // States
         private TaskCompletionSource<Game> _readyTcs = new TaskCompletionSource<Game>();
         private TaskCompletionSource<object> _connectedTcs = new TaskCompletionSource<object>();
-        private TaskCompletionSource<object> _endedTcs = new TaskCompletionSource<object>();
         private Dictionary<Guid, TaskCompletionSource<object>> _questionAnsweredTasks = new Dictionary<Guid, TaskCompletionSource<object>>();
 
         private Dictionary<Guid, TriviaBankEntry> _questions = new Dictionary<Guid, TriviaBankEntry>();
@@ -60,7 +59,7 @@ namespace TriviaServer
 
             _connectedTcs.SetResult(null);
 
-            return _endedTcs.Task;
+            return responseTask;
         }
 
         public void SendQuestion(TriviaBankEntry entry)
@@ -77,8 +76,6 @@ namespace TriviaServer
 
             _responseStream.WriteAsync(question);
         }
-
-        public void EndGame() => _endedTcs.SetResult(null);
 
         public Task QuestionAnsweredTask(Guid questionID) => _questionAnsweredTasks[questionID].Task;
     }
