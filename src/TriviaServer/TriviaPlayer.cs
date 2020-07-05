@@ -13,13 +13,13 @@ namespace TriviaServer
         private TaskCompletionSource<Game> _readyTcs = new TaskCompletionSource<Game>();
         private TaskCompletionSource<object> _connectedTcs = new TaskCompletionSource<object>();
         private Dictionary<Guid, TaskCompletionSource<object>> _questionAnsweredTasks = new Dictionary<Guid, TaskCompletionSource<object>>();
-
         private Dictionary<Guid, TriviaBankEntry> _questions = new Dictionary<Guid, TriviaBankEntry>();
         private IServerStreamWriter<TriviaQuestion> _responseStream;
         private ILogger _logger;
         public int Score { get; set; }
         // TODO: Time taken?
         public string Name { get; }
+        public event EventHandler ScoreUpdated;
 
         public Task<Game> ReadyTask => _readyTcs.Task;
         public Task<object> ConnectedTask => _connectedTcs.Task;
@@ -50,7 +50,9 @@ namespace TriviaServer
                     if (answer.Answer == _questions[questionID].CorrectAnswer)
                     {
                         Score++;
-                    }
+                    };
+
+                    ScoreUpdated?.Invoke(this, null);
 
                     // mark question as answered
                     _questionAnsweredTasks[questionID].SetResult(null);

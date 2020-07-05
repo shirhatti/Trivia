@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using TriviaGame;
+using TriviaServer.Hubs;
 
 namespace TriviaServer
 {
@@ -13,20 +15,33 @@ namespace TriviaServer
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly TriviaLobby _lobby;
+        private IHubContext<ScoreHub> _hubContext;
 
-        public TriviaService(ILoggerFactory loggerFactory, TriviaLobby lobby, ILogger<TriviaService> logger)
+        public TriviaService(ILoggerFactory loggerFactory, TriviaLobby lobby, ILogger<TriviaService> logger, IHubContext<ScoreHub> hubContext)
         {
             _loggerFactory = loggerFactory;
             _logger = logger;
             _lobby = lobby;
+            _hubContext = hubContext;
         }
 
         public override Task<Game> StartTrivia(Player request, ServerCallContext context)
         {
             var player = new TriviaPlayer(request.Name, _loggerFactory);
+            player.ScoreUpdated += ScoreUpdated;
             _lobby.AddPlayer(player);
-
             return player.ReadyTask;
+        }
+
+        private void ScoreUpdated(object sender, EventArgs e)
+        {
+            string[] playerNames = { "Santa", "Claus" };
+            int[] playerScores = { 1, 2 };
+            _hubContext.Clients.All.SendAsync("UpdateScore", new
+            {
+                Names = playerNames,
+                Scores = playerScores
+            });
         }
 
         public override async Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<TriviaQuestion> responseStream, ServerCallContext context)

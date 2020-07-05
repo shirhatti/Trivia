@@ -1,0 +1,27 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@section Stylesheets {
+    <link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <canvas id="chart0" style="width:512px;height:320px"></canvas>
+    </div>
+</div>
+
