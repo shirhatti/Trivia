@@ -19,7 +19,7 @@ namespace TriviaServer
         public int Score { get; set; }
         public string Name { get; }
         public TriviaGame Game { get; set; }
-
+        public event EventHandler ScoreUpdated;
         public Task<object> ReadyTask => _readyTcs.Task;
         public Task<object> ConnectedTask => _connectedTcs.Task;
         public Task<object> QuestionAnsweredTask => _questionAnswered.Task;
@@ -52,6 +52,8 @@ namespace TriviaServer
                     {
                         Score++;
                     }
+
+                    ScoreUpdated?.Invoke(this, null);
 
                     // notify question answered
                     _questionAnswered.SetResult(null);
