@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -21,15 +20,17 @@ namespace TriviaServer
             _lobby = lobby;
         }
 
-        public override Task<Game> StartTrivia(Player request, ServerCallContext context)
+        public override async Task<Game> StartTrivia(Player request, ServerCallContext context)
         {
             var player = new TriviaPlayer(request.Name, _loggerFactory);
             _lobby.AddPlayer(player);
 
-            return player.ReadyTask;
+            await player.ReadyTask;
+
+            return new Game { GameID = player.Game.ID.ToString() };
         }
 
-        public override async Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<TriviaQuestion> responseStream, ServerCallContext context)
+        public override async Task PlayTrivia(IAsyncStreamReader<TriviaAnswer> requestStream, IServerStreamWriter<global::TriviaGame.TriviaQuestion> responseStream, ServerCallContext context)
         {
             _logger.LogInformation("Playing trivia");
             var playerName = context.RequestHeaders.SingleOrDefault(h => h.Key == "playername")?.Value;
@@ -40,7 +41,7 @@ namespace TriviaServer
             var player = game.GetPlayer(playerName);
 
             var responseHeader = new Metadata();
-            responseHeader.Add("numberofquestions", TriviaBank.DefaultBank.Count().ToString());
+            responseHeader.Add("numberofquestions", TriviaBank.Questions.Count.ToString());
 
             await context.WriteResponseHeadersAsync(responseHeader);
             await player.Play(requestStream, responseStream);

@@ -44,7 +44,7 @@ namespace TriviaServer
                     readyPlayer.StartGame(game);
                 }
 
-                Task.Run(() => game.StartGameAsync());
+                Task.Run(() => game.PlayGameAsync());
             }
         }
 

@@ -5,59 +5,64 @@
 
 @inject Trivia.TriviaClient TriviaClient
 
-@if (!Started)
+@if (State <= GameState.WaitingForPlayers)
 {
     <StartTriviaComponent OnClick="SendStartTrivia" />
 }
 <QuestionComponent Question="@Question" OnClick="SendAnswer" />
-@if (WaitingForPlayers)
+@if (State == GameState.WaitingForPlayers || State == GameState.WaitingForQuestion)
 {
     <p>Waiting for other players...</p>
 }
-@if (AllAnswerSent.Task.IsCompleted)
+@if (State == GameState.GameEnded)
 {
     <p>Score</p>
     <p>@Score</p>
 }
 
 @code {
+    // UI
     private TriviaQuestion Question { get; set; }
-    private Game Game { get; set; }
-    private Player Player { get; set; }
-    private string Answer { get; set; }
-    private bool Started { get; set; }
-    private bool WaitingForPlayers { get; set; }
     private int Score { get; set; }
-    private int NumberOfQuestions { get; set; }
-    private int NumberOfQuestionsAnswered { get; set; }
+
+
+    // Game mechanics
+    private GameState State { get; set; } = GameState.Initial;
+    private int PendingQuestions { get; set; }
     private TaskCompletionSource<object> AllAnswerSent { get; } = new TaskCompletionSource<object>();
 
     private AsyncDuplexStreamingCall<TriviaAnswer, TriviaQuestion> Call { get; set; }
 
+    enum GameState
+    {
+        Initial,
+        WaitingForPlayers,
+        Responding,
+        WaitingForQuestion,
+        GameEnded
+    }
+
     private async Task SendStartTrivia(string name)
     {
-        WaitingForPlayers = true;
+        State = GameState.WaitingForPlayers;
         await InvokeAsync(() => base.StateHasChanged());
 
-        Player = new Player { Name = name };
-        Game = await TriviaClient.StartTriviaAsync(Player);
-        Started = true;
-        WaitingForPlayers = false;
-        await InvokeAsync(() => base.StateHasChanged());
+        var player = new Player { Name = name };
+        var game = await TriviaClient.StartTriviaAsync(player);
 
         var metadata = new Metadata();
-        metadata.Add("playername", Player.Name);
-        metadata.Add("gameid", Game.GameID);
+        metadata.Add("playername", player.Name);
+        metadata.Add("gameid", game.GameID);
         Call = TriviaClient.PlayTrivia(metadata);
         var responseHeaders = await Call.ResponseHeadersAsync;
-        NumberOfQuestions = int.Parse(responseHeaders.SingleOrDefault(h => h.Key == "numberofquestions").Value);
+        PendingQuestions = int.Parse(responseHeaders.SingleOrDefault(h => h.Key == "numberofquestions").Value);
 
         var readTask = Task.Run(async () =>
         {
             await foreach (var triviaQuestion in Call.ResponseStream.ReadAllAsync())
             {
-                WaitingForPlayers = false;
                 Question = triviaQuestion;
+                State = GameState.Responding;
                 await InvokeAsync(() => base.StateHasChanged());
             }
         });
@@ -68,8 +73,9 @@
 
         Question = null;
 
-        var result = await TriviaClient.TriviaScoreAsync(new TriviaSession { Game = Game, Player = Player });
+        var result = await TriviaClient.TriviaScoreAsync(new TriviaSession { Game = game, Player = player });
         Score = result.Score;
+        State = GameState.GameEnded;
 
         await InvokeAsync(() => base.StateHasChanged());
     }
@@ -77,16 +83,15 @@
     private async Task SendAnswer(TriviaAnswer answer)
     {
         await Call.RequestStream.WriteAsync(answer);
-        NumberOfQuestionsAnswered++;
+        PendingQuestions--;
 
-
-        if (NumberOfQuestionsAnswered == NumberOfQuestions)
+        if (PendingQuestions == 0)
         {
             AllAnswerSent.SetResult(null);
         }
         else
         {
-            WaitingForPlayers = true;
+            State = GameState.WaitingForQuestion;
             await InvokeAsync(() => base.StateHasChanged());
         }
     }

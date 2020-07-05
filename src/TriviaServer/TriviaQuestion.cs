@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TriviaServer
 {
-    public class TriviaBankEntry
+    public class TriviaQuestion
     {
         public string Question { get; set; }
         public Guid QuestionID { get; set; }

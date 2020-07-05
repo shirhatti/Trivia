@@ -1,24 +1,36 @@
-﻿using System;
+﻿using Microsoft.Extensions.Localization.Internal;
+using System;
 using System.Collections.Generic;
 
 namespace TriviaServer
 {
-    public class TriviaBank
+    public static class TriviaBank
     {
-        public static IEnumerable<TriviaBankEntry> DefaultBank = new TriviaBankEntry[]
+        public static IDictionary<Guid, TriviaQuestion> Questions = new Dictionary<Guid, TriviaQuestion>();
+
+        static TriviaBank()
         {
-            new TriviaBankEntry {
-                Question = "Equal to roughly 746 watts, what animal-based unit is used to measure the rate at which work is done?",
-                QuestionID = Guid.NewGuid(),
-                Answers = new string[] { "HorsePower", "Donkeystrength", "Llamathrust", "Zebraforce" },
-                CorrectAnswer = 0
-            },
-            new TriviaBankEntry {
-                Question = "Which of the following is the largest?",
-                QuestionID = Guid.NewGuid(),
-                Answers = new string[] { "Peanut", "Elephant", "Moon", "Kettle" },
-                CorrectAnswer = 2
-            }
-        };
+            AddQuestion(
+                prompt: "Equal to roughly 746 watts, what animal-based unit is used to measure the rate at which work is done?",
+                answers: new string[] { "HorsePower", "Donkeystrength", "Llamathrust", "Zebraforce" },
+                correctAnswer: 0);
+            AddQuestion(
+                prompt: "Which of the following is the largest?",
+                answers: new string[] { "Peanut", "Elephant", "Moon", "Kettle" },
+                correctAnswer: 2);
+        }
+
+        private static void AddQuestion(string prompt, string[] answers, int correctAnswer)
+        {
+            var questionID = Guid.NewGuid();
+
+            Questions[questionID] = new TriviaQuestion
+            {
+                Question = prompt,
+                QuestionID = questionID,
+                Answers = answers,
+                CorrectAnswer = correctAnswer
+            };
+        }
     }
 }

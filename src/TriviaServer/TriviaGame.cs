@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TriviaGame;
 
 namespace TriviaServer
 {
@@ -21,14 +20,14 @@ namespace TriviaServer
             ID = Guid.NewGuid();
         }
 
-        public async Task StartGameAsync()
+        public async Task PlayGameAsync()
         {
             _logger.LogInformation("Starting trivia game");
 
             // Wait for all users to connect
             await Task.WhenAll(_players.Select(p => p.ConnectedTask));
 
-            foreach (var question in TriviaBank.DefaultBank)
+            foreach (var question in TriviaBank.Questions.Values)
             {
                 _logger.LogInformation($"Sending question with id {question.QuestionID}");
 
@@ -39,7 +38,7 @@ namespace TriviaServer
                 }
 
                 // Wait for all users to answer the given the question
-                await Task.WhenAll(_players.Select(p => p.QuestionAnsweredTask(question.QuestionID)));
+                await Task.WhenAll(_players.Select(p => p.QuestionAnsweredTask));
             }
 
             _logger.LogInformation("Trivia questions completed");
