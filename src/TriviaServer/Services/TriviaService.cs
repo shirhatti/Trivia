@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -38,12 +39,22 @@ namespace TriviaServer
 
         private void ScoreUpdated(object sender, EventArgs e)
         {
-            string[] playerNames = { "Santa", "Claus" };
-            int[] playerScores = { 1, 2 };
+            var players = new List<string>();
+            var scores = new List<int>();
+
+            foreach (var game in _lobby.Games.Values)
+            {
+                foreach (var player in game.Players)
+                {
+                    players.Add(player.Name);
+                    scores.Add(player.Score);
+                }
+            }
+
             _hubContext.Clients.All.SendAsync("UpdateScore", new
             {
-                Names = playerNames,
-                Scores = playerScores
+                Names = players.ToArray(),
+                Scores = scores.ToArray()
             });
         }
 
@@ -54,7 +65,7 @@ namespace TriviaServer
             var gameId = context.RequestHeaders.SingleOrDefault(h => h.Key == "gameid")?.Value;
 
             _logger.LogInformation($"Starting trivia game with {playerName} in {gameId} with ");
-            var game = _lobby.GetGame(Guid.Parse(gameId));
+            var game = _lobby.Games[Guid.Parse(gameId)];
             var player = game.GetPlayer(playerName);
 
             var responseHeader = new Metadata();
@@ -69,7 +80,7 @@ namespace TriviaServer
             return Task.FromResult(new TriviaResult
             {
                 Score = _lobby
-                    .GetGame(Guid.Parse(request.Game.GameID))
+                    .Games[Guid.Parse(request.Game.GameID)]
                     .GetPlayer(request.Player.Name).Score
             });
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Localization.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace TriviaServer

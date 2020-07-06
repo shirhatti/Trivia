@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace TriviaServer
@@ -11,9 +10,10 @@ namespace TriviaServer
     {
         private const int PlayersPerGame = 2;
         private ConcurrentQueue<TriviaPlayer> _players = new ConcurrentQueue<TriviaPlayer>();
-        private Dictionary<Guid, TriviaGame> _games = new Dictionary<Guid, TriviaGame>();
         private object _gameStartLock = new object();
         private ILoggerFactory _loggerFactory;
+
+        public IDictionary<Guid, TriviaGame> Games { get; } = new Dictionary<Guid, TriviaGame>();
 
         public TriviaLobby(ILoggerFactory loggerFactory)
         {
@@ -38,7 +38,7 @@ namespace TriviaServer
                 }
 
                 var game = new TriviaGame(readyPlayers, _loggerFactory);
-                _games[game.ID] = game;
+                Games[game.ID] = game;
 
                 foreach (var readyPlayer in readyPlayers)
                 {
@@ -48,7 +48,5 @@ namespace TriviaServer
                 Task.Run(() => game.PlayGameAsync());
             }
         }
-
-        public TriviaGame GetGame(Guid guid) => _games[guid];
     }
 }
