@@ -5,6 +5,10 @@
 #    https://aka.ms/AA7q20u
 #
 name: trivia
+
+extensions:
+- name: zipkin
+
 services:
 - name: triviaclient
   project: src/TriviaClient/TriviaClient.csproj
