@@ -16,7 +16,7 @@ namespace TriviaServer
             AddQuestion(
                 prompt: "What's not hard in computer science?",
                 answers: new string[] { "off-by-1 errors", "naming things", "building a gRPC implementation", "cache invalidation" },
-                correctAnswer: 0);
+                correctAnswer: 2);
         }
 
         private static void AddQuestion(string prompt, string[] answers, int correctAnswer)
