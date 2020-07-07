@@ -10,13 +10,13 @@ namespace TriviaServer
         static TriviaBank()
         {
             AddQuestion(
-                prompt: "Equal to roughly 746 watts, what animal-based unit is used to measure the rate at which work is done?",
-                answers: new string[] { "HorsePower", "Donkeystrength", "Llamathrust", "Zebraforce" },
-                correctAnswer: 0);
+                prompt: "What does the g in gRPC stand for?",
+                answers: new string[] { "google", "gRPC", "general purpose", "good" },
+                correctAnswer: 1);
             AddQuestion(
-                prompt: "Which of the following is the largest?",
-                answers: new string[] { "Peanut", "Elephant", "Moon", "Kettle" },
-                correctAnswer: 2);
+                prompt: "What's not hard in computer science?",
+                answers: new string[] { "off-by-1 errors", "naming things", "building a gRPC implementation", "cache invalidation" },
+                correctAnswer: 0);
         }
 
         private static void AddQuestion(string prompt, string[] answers, int correctAnswer)
