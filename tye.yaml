@@ -6,13 +6,30 @@
 #
 name: trivia
 
-extensions:
-- name: zipkin
-- name: seq
-  logPath: ./.logs
-
 services:
 - name: triviaclient
   project: src/TriviaClient/TriviaClient.csproj
+  env:
+  - name: COMPlus_DbgEnableMiniDump
+    value: "1"
+  - name: COMPlus_DbgMiniDumpName
+    value: "C:\\Users\\shirh\\source\\repos\\Trivia\\.dumps\\coredump.%d.dmp"
 - name: triviaserver
   project: src/TriviaServer/TriviaServer.csproj
+- name: zipkin
+  image: openzipkin/zipkin
+  bindings:
+  - port: 9411
+    connectionString: "${host}:${port}"
+- name: seq
+  image: datalust/seq
+  bindings:
+  - port: 5341
+    protocol: http
+    connectionString: "${host}:${port}"
+  env:
+  - name: ACCEPT_EULA
+    value: "Y"
+  volumes:
+    - source: .logs/
+      target: /data

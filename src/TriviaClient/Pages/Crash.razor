@@ -1,0 +1,10 @@
+﻿@page "/crash"
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Environment.FailFast("Crash the process");
+        await Task.CompletedTask;
+    }
+}

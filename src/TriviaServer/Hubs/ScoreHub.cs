@@ -8,5 +8,9 @@ namespace TriviaServer.Hubs
 {
     public class ScoreHub : Hub
     {
+        public override Task OnConnectedAsync()
+        {
+            return base.OnConnectedAsync();
+        }
     }
 }

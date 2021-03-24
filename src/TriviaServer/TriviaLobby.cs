@@ -8,7 +8,7 @@ namespace TriviaServer
 {
     public class TriviaLobby
     {
-        private const int PlayersPerGame = 2;
+        private const int PlayersPerGame = 1;
         private ConcurrentQueue<TriviaPlayer> _players = new ConcurrentQueue<TriviaPlayer>();
         private object _gameStartLock = new object();
         private ILoggerFactory _loggerFactory;
